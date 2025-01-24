@@ -16,6 +16,7 @@ const Blog = () => {
           },
         }
       );
+
       setBlog(res.data);
     } catch (error) {
       console.error(error);
@@ -31,14 +32,13 @@ const Blog = () => {
       <div>
         {blog ? (
           <div>
-            // need to sanitize html
             <img
               className="object-cover w-[15rem] h-[15rem] bg-center rounded-t-lg md:h-full md:w-1/2 md:rounded-none md:rounded-s-lg md:mr-5"
-              src={`data:image/jpeg;base64,${blog.image}`}
+              src={`data:image/jpeg;base64,${blog.base64String}`}
               alt="image"
             />
-            <h1>{blog.title}</h1>
-            <p>{blog.content}</p>
+            <h1>{blog.post.title}</h1>
+            <div dangerouslySetInnerHTML={{ __html: blog.post.content }}></div>
           </div>
         ) : (
           <p>Loading...</p>

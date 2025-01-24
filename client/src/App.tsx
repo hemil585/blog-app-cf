@@ -5,14 +5,18 @@ import Blog from "./pages/Blog";
 import Home from "./pages/Home";
 import WriteBlog from "./pages/WriteBlog";
 import Navbar from "./components/Navbar";
-import { ProtectedRoute } from "./utils/ProtectedRoute";
+import ProtectedRoute from "./utils/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 
 const App = () => {
   const { isLoggedIn } = useAuth();
   return (
     <div className="font-quicksand font-light">
-      {isLoggedIn && <Navbar />}
+      {isLoggedIn && (
+        <ProtectedRoute>
+          <Navbar />
+        </ProtectedRoute>
+      )}
       <Routes>
         <Route
           path="/"

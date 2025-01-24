@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { logout,isLoggedIn } = useAuth();
+  const { logout, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const onLogout = () => {
@@ -18,7 +18,7 @@ const Navbar = () => {
   const onWrite = () => {
     if (isLoggedIn) {
       navigate("/publish");
-    }else{
+    } else {
       navigate("/signin");
     }
   };
@@ -26,7 +26,7 @@ const Navbar = () => {
   return (
     <div className="flex items-center justify-between p-2 sm:p-4 border border-b-zinc-300">
       <div>
-        <Link to={"/"}>Logo</Link>
+        <Link to={"/"}>BlogApp</Link>
       </div>
       <div className="flex items-center gap-5 sm:gap-14">
         <button onClick={onWrite} className="ml-2 flex items-center">

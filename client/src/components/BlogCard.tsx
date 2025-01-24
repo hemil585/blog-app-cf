@@ -28,7 +28,7 @@ const BlogCard = ({
       >
         <img
           className="object-cover w-full h-[15rem] bg-center rounded-t-lg md:h-full md:w-1/2 md:rounded-none md:rounded-s-lg md:mr-5"
-          src={`data:image/jpeg;base64,${image}`} 
+          src={`data:image/jpeg;base64,${image}`}
           alt="image"
         />
         <div className="md:w-1/2 h-full p-1 lg:py-5 flex flex-col justify-between leading-normal">

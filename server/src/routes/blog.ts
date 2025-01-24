@@ -6,7 +6,8 @@ import { encodeBase64 } from "hono/utils/encode"
 export const blogRouter = new Hono<{
     Bindings: {
         DATABASE_URL: string,
-        JWT_SECRET: string
+        JWT_SECRET: string,
+        BLOG_APP_KV: KVNamespace
     },
     Variables: {
         userId: string,
@@ -48,9 +49,11 @@ blogRouter.post('/', async (c) => {
     try {
         const post = await prisma.post.create({
             data: {
-                title, content, authorId: userId, image: base64
+                title, content, authorId: userId
             }
         })
+
+        await c.env.BLOG_APP_KV.put(post.id, base64);
 
         return c.json({
             postId: post.id
@@ -100,6 +103,7 @@ blogRouter.put('/', async (c) => {
 // pagination 
 blogRouter.get('/bulk', async (c) => {
     const prisma = c.get('prisma')
+    const postImages: { postId: string; base64String: string }[] = [];
 
     try {
         const posts = await prisma.post.findMany({
@@ -107,7 +111,6 @@ blogRouter.get('/bulk', async (c) => {
                 content: true,
                 title: true,
                 id: true,
-                image: true,
                 author: {
                     select: {
                         username: true
@@ -116,8 +119,18 @@ blogRouter.get('/bulk', async (c) => {
                 createdAt: true
             }
         })
+
+        for (let i = 0; i < posts.length; i++) {
+            const postId = posts[i].id;
+
+            const base64String = await c.env.BLOG_APP_KV.get(postId);
+            if (base64String) {
+                postImages.push({ postId, base64String });
+            }
+        }
+
         c.status(200)
-        return c.json(posts)
+        return c.json({ posts, postImages })
     } catch (error: any) {
         c.status(400)
         return c.text(error);
@@ -129,6 +142,7 @@ blogRouter.get('/:id', async (c) => {
     const id = c.req.param('id')
 
     try {
+        const base64String = await c.env.BLOG_APP_KV.get(id);
         const post = await prisma.post.findUnique({
             where: {
                 id
@@ -136,7 +150,7 @@ blogRouter.get('/:id', async (c) => {
         })
 
         c.status(200)
-        return c.json(post)
+        return c.json({ post, base64String })
     } catch (error: any) {
         c.status(400)
         return c.text(error);

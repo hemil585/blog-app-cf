@@ -7,26 +7,36 @@ type Blog = {
   id: string;
   title: string;
   content: string;
-  image:string
+  image: string;
   author: {
     username: string;
   };
   createdAt: string;
 };
 
+type BlogImages = {
+  postId: string;
+  base64String: string;
+};
+
 const Home = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [blogImages, setBlogImages] = useState<BlogImages[]>([]);
   const [wordLimit, setWordLimit] = useState(50); // default for large screens
   const [loading, setLoading] = useState(true);
 
   const getBlogs = async () => {
     try {
-      const res = await axios("https://blog-app-cf.hemilpatel3534.workers.dev/api/v1/blog/bulk", {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwt"),
-        },
-      });
-      setBlogs(res.data);
+      const res = await axios(
+        "https://blog-app-cf.hemilpatel3534.workers.dev/api/v1/blog/bulk",
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("jwt"),
+          },
+        }
+      );
+      setBlogs(res.data.posts);
+      setBlogImages(res.data.postImages);
       setLoading(false);
     } catch (error: unknown) {
       console.error(error);
@@ -74,17 +84,22 @@ const Home = () => {
                 <BlogSkeleton key={index} />
               </>
             ))
-          : blogs.map((blog) => (
-              <BlogCard
-                key={blog.id}
-                id={blog.id}
-                title={blog.title}
-                content={truncateContent(blog.content)}
-                image={blog.image}
-                author={blog.author.username}
-                published={formatDate(blog.createdAt)}
-              />
-            ))}
+          : blogs.map((blog) => {
+              const blogImage = blogImages.find(
+                (img) => img.postId === blog.id
+              );
+              return (
+                <BlogCard
+                  key={blog.id}
+                  id={blog.id}
+                  title={blog.title}
+                  content={truncateContent(blog.content)}
+                  image={blogImage?.base64String || ""}
+                  author={blog.author.username}
+                  published={formatDate(blog.createdAt)}
+                />
+              );
+            })}
       </div>
     </>
   );

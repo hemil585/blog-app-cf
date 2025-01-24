@@ -4,10 +4,8 @@ import LabelledInput from "./LabelledInput";
 import { SignupInput } from "@hemilpatel/medium-common";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
 
 const Auth = ({ type }: { type: "signup" | "signin" }) => {
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [inputs, setInputs] = useState<SignupInput>({
@@ -35,7 +33,6 @@ const Auth = ({ type }: { type: "signup" | "signin" }) => {
           id: loadingToast,
         }
       );
-      login()
       navigate("/");
     } catch (error) {
       toast.dismiss(loadingToast);
